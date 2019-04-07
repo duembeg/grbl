@@ -140,10 +140,12 @@ typedef struct {
   #endif
 
   uint8_t execute_step;     // Flags step execution for each interrupt.
-#ifndef WIN32
-  uint8_t step_pulse_time;  // Step pulse reset time after step rise
+#ifdef WIN32
+  LONGLONG step_pulse_time;  // Step pulse reset time after step rise
+#elif defined(STM32F103C8)
+  uint16_t step_pulse_time;  // Step pulse reset time after step rise
 #else
-  LONGLONG step_pulse_time;
+  uint8_t step_pulse_time;  // Step pulse reset time after step rise
 #endif
   PORTPINDEF step_outbits;         // The next stepping-bits to be output
   PORTPINDEF dir_outbits;
