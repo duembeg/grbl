@@ -5,11 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "cortex-debug",
+            "request": "launch",
             "name": "Cortex Debug (OpenOCD)",
             "cwd": "${workspaceRoot}",
             "executable": "./build/grbl-stm32.elf",
-            "request": "launch",
-            "type": "cortex-debug",
             "servertype": "openocd",
             "configFiles": [
                 ".openocd/stlink-v2.cfg",
@@ -21,8 +21,20 @@
                 "symbol-file ./build/grbl-stm32.elf",
                 //"load",
                 "monitor halt",
+                "break main",
+                "cont"
             ],
             "device": "STM32F103C8",
+        },
+        {
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "stutil",
+            "cwd": "${workspaceRoot}",
+            "executable": "./build/grbl-stm32.elf",
+            "name": "Debug (ST-Util)",
+            "device": "STM32F103C8",
+            "v1": false
         }
     ]
 }
