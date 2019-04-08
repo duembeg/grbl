@@ -1,0 +1,28 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Cortex Debug (OpenOCD)",
+            "cwd": "${workspaceRoot}",
+            "executable": "./build/grbl-stm32.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "openocd",
+            "configFiles": [
+                ".openocd/stlink-v2.cfg",
+                ".openocd/stm32f1x.cfg"
+            ],
+            "postLaunchCommands": [
+                "monitor reset halt",
+                "exec-file ./build/grbl-stm32.elf",
+                "symbol-file ./build/grbl-stm32.elf",
+                //"load",
+                "monitor halt",
+            ],
+            "device": "STM32F103C8",
+        }
+    ]
+}
