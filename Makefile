@@ -21,7 +21,7 @@ X_AR = $(XTOOLS_DIR)/bin/arm-none-eabi-ar
 X_LD = $(XTOOLS_DIR)/bin/arm-none-eabi-ld
 X_GDB = $(XTOOLS_DIR)/bin/arm-none-eabi-gdb
 
-OUT_DIR = debug
+OUT_DIR = build
 
 OUTPUT = grbl-stm32
 
@@ -91,11 +91,11 @@ INCLUDE = $(addprefix -I,$(INC))
 CFLAGS = -Wall
 CFLAGS += -Os
 CFLAGS += -g2
-CFLAGS += -mthumb 
+CFLAGS += -mthumb
 CFLAGS += -mcpu=cortex-m3
 
 # linker flags
-LDSCRIPT = STM32F103C8T6.ld
+LDSCRIPT = STM32F103C8T6_flash.ld
 LDFLAGS = -T$(LDSCRIPT) -Wl,-Map,$(OUT_DIR)/$(OUTPUT).map -Wl,--gc-sections
 
 # defines
@@ -113,15 +113,35 @@ all:  $(OBJ)
 	mv $(OUT_DIR)/$(OUTPUT) $(OUT_DIR)/$(OUTPUT).elf
 	$(X_OBJCOPY) -O binary $(OUT_DIR)/$(OUTPUT).elf $(OUT_DIR)/$(OUTPUT).bin
 
-flash:
-	make all
+flash: all
 	st-flash write $(OUT_DIR)/$(OUTPUT).bin 0x08000000
 
-grbl_src:
-	make  all
+grbl_src: all;
 
 clean:
 	-rm $(OBJ)
 	-rm $(OUT_DIR)/$(OUTPUT).map
 	-rm $(OUT_DIR)/$(OUTPUT).bin
 	-rm $(OUT_DIR)/$(OUTPUT).elf
+
+bluepill: all;
+
+bluepill_w_dfu: DEFINES += -DWITH_DFU_BOOTLOADER
+bluepill_w_dfu: LDSCRIPT = STM32F103C8T6_dfu.ld
+bluepill_w_dfu: all;
+
+maple: DEFINES += -DWITH_DFU_BOOTLOADER -DMAPLE_MINI
+maple: LDSCRIPT = STM32F103C8T6_dfu.ld
+maple: all;
+
+flash_bluepill: bluepill
+	./.flash/flash-w-st-link.sh $(OUT_DIR)/$(OUTPUT).bin 0x8000000
+
+flash_bluepill_w_st-link_for_dfu: bluepill_w_dfu
+	./.flash/flash-w-st-link.sh $(OUT_DIR)/$(OUTPUT).bin 0x8002000
+
+flash_dfu_bluepill: bluepill_w_dfu
+	./.flash/flash-w-dfu.sh $(OUT_DIR)/$(OUTPUT).bin
+
+flash_dfu_maple: maple
+	./.flash/flash-w-dfu.sh $(OUT_DIR)/$(OUTPUT).bin

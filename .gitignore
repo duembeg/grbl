@@ -4,4 +4,5 @@
 *.DS_Store
 *.d
 
-README.md
+.vscode/iph/
+debug/
