@@ -110,6 +110,9 @@ int main(void)
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
   GPIO_WriteBit(GPIOB, GPIO_Pin_9, 1);
+  delay_ms(5);
+
+  GPIO_WriteBit(GPIOB, GPIO_Pin_9, 0);
 #elif defined(WITH_DFU_BOOTLOADER)
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
@@ -118,6 +121,9 @@ int main(void)
   GPIO_Init(GPIOA, &GPIO_InitStructure);
   GPIO_WriteBit(GPIOA, GPIO_Pin_12, 0);
   delay_ms(5);
+
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
 #endif
 
 	//Set_System();
@@ -127,11 +133,6 @@ int main(void)
 	Set_USBClock();
 	USB_Interrupts_Config();
 	USB_Init();
-#endif
-
-// after hot usb enumeration, let usb function normally
-#ifdef MAPLE_MINI
-  GPIO_WriteBit(GPIOB, GPIO_Pin_9, 0);
 #endif
 
 #ifndef NOEEPROMSUPPORT
